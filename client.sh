@@ -1,6 +1,6 @@
 #!/bin/bash
 
 echo 'connecting to server...'
-echo "give_me_port" | nc localhost $2 | cat
+port=$(echo "give_me_port" | nc localhost $2)
 echo "my port: $port" 
-#nc $1 $port
+nc $1 $port
