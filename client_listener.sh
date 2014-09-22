@@ -20,7 +20,7 @@ while read server_message < "$pipe"; do
 			exit 0
 			;;
 		*)
-			echo "$server_message to $name"
+			echo "$server_message"
 	esac
 done &
 
@@ -33,7 +33,7 @@ while read user_message; do
 			exit 0
 			;;
 		*)
-			echo "$name: $user_message"
+			echo "$$:$name:$user_message" > server.fifo
 	esac
 done
 

@@ -6,7 +6,7 @@ if [[ "$message" = 'give_me_port' ]]
 then
 	count=$(ls *.fifo | wc -l)
 	port=$(($count+5001))
-	nohup nc -l -p $port -e client_listener.sh &
+	nohup nc -l -p $port -e client_listener.sh <&- >&- &
 	echo $port 
 else
 	echo 'wrong_message'

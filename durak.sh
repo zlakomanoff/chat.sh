@@ -13,7 +13,7 @@ while read mode; do
 				host=${mode[1]}
 			fi
 			if [[ -z ${mode[2]} ]]; then
-				port=1234
+				port=8000
 			else
 				port=${mode[2]}
 			fi
@@ -32,8 +32,11 @@ while read mode; do
 			fi
 			bash client.sh "${mode[1]]}" "${mode[2]]}"
 			;;
+		'exit')
+			exit 0;
+			;;
 		*)
-			echo 'select mode: server [port] | client [port] [ip]'
+			echo 'select mode: server [port] | client [port] [ip] | exit'
 	esac
 done
 
