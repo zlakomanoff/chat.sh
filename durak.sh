@@ -36,7 +36,7 @@ while read mode; do
 			exit 0;
 			;;
 		*)
-			echo 'select mode: server [port] | client [port] [ip] | exit'
+			echo 'select mode: server [ip] [port] | client [ip] [port] | exit'
 	esac
 done
 
