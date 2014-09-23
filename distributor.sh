@@ -11,7 +11,7 @@ then
 			break
 		fi
 	done
-	coproc $count { nc -l -p $port -e client_listener.sh; }
+	coproc nc -l -p $port -e client_listener.sh
 	echo $port
 else
 	echo 'wrong_message'
