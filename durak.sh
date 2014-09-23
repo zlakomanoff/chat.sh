@@ -1,13 +1,17 @@
 #!/bin/bash
 
+message='select mode: server [ip] [port] | client [ip] [port] | exit'
+
+echo -en \\033c
 echo 'durak.sh'
-echo 'select mode: server|client'
+echo $message
 
 while read mode; do
 	mode=( $mode )
+	
 	case "${mode[0]]}" in
 		'server')
-			if [[ -z ${mode[1]} ]]; then
+			if [[ -z ${mode[1]} ]]; then 
 				host='localhost'
 			else
 				host=${mode[1]}
@@ -35,8 +39,8 @@ while read mode; do
 		'exit')
 			exit 0;
 			;;
-		*)
-			echo 'select mode: server [ip] [port] | client [ip] [port] | exit'
 	esac
+	
+	echo $message
 done
 
