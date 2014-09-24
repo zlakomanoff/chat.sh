@@ -3,15 +3,18 @@
 echo 'connecting to server...'
 
 attempts=0
+coproc server { nc "$1" "$2"; }
+
 while true; do
-	port=$(echo give_me_port | nc $1 $2)
-	if [[ $port =~ ^[0-9]{5}$ ]]
+    echo 'gmport' >&${server[1]}
+    read -ru ${server[0]} port
+	if [[ "$port" =~ ^[0-9]{5}$ ]]
 	then
+	    kill -13 "$server_PID"
 		break
 	else
-		echo $port
 		let "attempts++"
-		if [ $attempts -eq 3 ]; 
+		if [ "$attempts" -eq 3 ];
 		then
 			echo 'can`t connect to server'
 			exit 0
@@ -19,7 +22,8 @@ while true; do
 			echo 'trying new attempt...'
 		fi
 	fi
+
 done
 
 sleep 1
-nc $1 $port
+nc "$1" "$port"

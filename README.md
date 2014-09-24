@@ -1,7 +1,16 @@
-### Multiplayer card game "Durak.sh"
+### chat server with bash "chat.sh"
 
-Game start:
+interactive start:
 ```
-bash durak.sh
+bash loader.sh
 ```
 
+start server:
+```
+bash server.sh {port}
+```
+
+start bash client:
+```
+bash client.sh {ip} {port}
+```
