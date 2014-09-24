@@ -10,8 +10,8 @@ while true; do
     read -ru ${server[0]} port
 	if [[ "$port" =~ ^[0-9]{5}$ ]]
 	then
-	    kill -13 "$server_PID"
-		break
+        kill -13 "$server_PID"
+        break
 	else
 		let "attempts++"
 		if [ "$attempts" -eq 3 ];

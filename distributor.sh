@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo 'chat.sh'
 read message
 
 if [[ "$message" == 'gmport' ]]
