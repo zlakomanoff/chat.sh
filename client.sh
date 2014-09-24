@@ -4,7 +4,7 @@ echo 'connecting to server...'
 
 attempts=0
 while true; do
-	port=$(echo give_me_port | nc localhost $2)
+	port=$(echo give_me_port | nc $1 $2)
 	if [[ $port =~ ^[0-9]{5}$ ]]
 	then
 		break
