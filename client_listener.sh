@@ -14,9 +14,9 @@ while read server_message < "$pipe"; do
 done &
 
 # read client messages
-while read user_message; do 
+while read user_message; do
 	case "$user_message" in
-		exit)
+		'exit')
 			kill -13 $!
 			wait $!
 			rm -f "$pipe"

@@ -10,9 +10,10 @@ while read data < "$pipe"; do
 	pid=${data%%:*} && data=${data#$pid:}
 	login=${data%%:*}
 	message=${data#$login:}
-	
+	timestamp=$(date +%s)
+
 	if [[ "$message" == 'exit' ]];
-	then 
+	then
 		count=$(ls *.fifo | wc -l)
         if [[ "$count" -eq 1 ]];
         then
@@ -26,9 +27,9 @@ while read data < "$pipe"; do
 
 	for pi in *.fifo
 	do
-		if [[ "$pi" != "$pipe" && "$pi" != "$pid.fifo" ]]; 
+		if [[ "$pi" != "$pipe" ]]; 
 		then
-			echo -e "$login: $message" > "$pi"
+			echo "$login:$timestamp:$message" > "$pi"
 		fi
 	done
 
