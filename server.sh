@@ -15,14 +15,14 @@ while read data < "$pipe"; do
 	if [[ "$message" == 'exit' ]];
 	then
 		count=$(ls *.fifo | wc -l)
-        if [[ "$count" -eq 1 ]];
-        then
-            kill -13 $distributor_PID
-            wait $distributor_PID
-            rm -f *.fifo
-            echo 'server stoped'
-            exit 0
-        fi
+		if [[ "$count" -eq 1 ]];
+		then
+			kill -13 $distributor_PID
+			wait $distributor_PID
+			rm -f *.fifo
+			echo 'server stoped'
+			exit 0
+		fi
 	fi
 
 	for pi in *.fifo
