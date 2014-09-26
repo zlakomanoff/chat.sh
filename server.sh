@@ -17,7 +17,7 @@ while read data < "$pipe"; do
 		count=$(ls *.fifo | wc -l)
 		if [[ "$count" -eq 1 ]];
 		then
-			kill -13 $distributor_PID
+			kill -9 -"$distributor_PID"
 			wait $distributor_PID
 			rm -f *.fifo
 			echo 'server stoped'
