@@ -3,24 +3,32 @@
 echo 'connecting to server...'
 
 attempts=0
-coproc server { nc "$1" "$2"; }
+coproc server { nc "$1" "$2" 2>/dev/null; }
 
 while true; do
-	echo 'gmport' >&${server[1]}
-	read -ru ${server[0]} port
-	if [[ "$port" =~ ^[0-9]{5}$ ]]
+
+	if [ ! -z "${server[1]}" ];
 	then
-		kill -13 "$server_PID"
-		break
+		echo 'gmport' >&${server[1]}
+		read -ru ${server[0]} port
+		if [[ "$port" =~ ^[0-9]{5}$ ]]
+		then
+			kill -13 "$server_PID"
+			break
+		else
+			let "attempts++"
+		fi
 	else
 		let "attempts++"
-		if [ "$attempts" -eq 3 ];
-		then
-			echo 'can`t connect to server'
-			exit 0
-		else
-			echo 'trying new attempt...'
-		fi
+	fi
+
+	if [ "$attempts" -eq 3 ];
+	then
+		echo 'can`t connect to server'
+		exit 0
+	else
+		echo 'trying new attempt...'
+		sleep 3
 	fi
 
 done

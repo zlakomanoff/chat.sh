@@ -17,10 +17,8 @@ done &
 while read user_message; do
 	case "$user_message" in
 		'exit')
-			kill -13 $!
-			wait $!
-			rm -f "$pipe"
-			echo -e "game closed"
+			/bin/kill -9 $! && rm -f "$pipe"
+			echo 'game closed'
 			echo "$$:$name:$user_message" > server.fifo
 			exit 0
 			;;
