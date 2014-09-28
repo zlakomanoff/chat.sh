@@ -1,10 +1,24 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then port=8000; else port=$1; fi
-pipe='server.fifo' && rm -f *.fifo && mkfifo "$pipe"
+pipe='server.fifo' && rm -f "$pipe" && mkfifo "$pipe"
 
-coproc DISTR { while true; do nc -l -p "$port" -e distributor.sh; done; }
-echo "server started on $port"
+function server_stop() {
+	. killtree.sh
+	echo 'waiting child processes'
+	killtree $! 15
+	wait $! 2>/dev/null
+	rm -f "$pipe" && echo 'bye'
+}
+trap "server_stop; exit" SIGINT
+
+{
+	echo "server started on $port"
+	while true; 
+	do 
+		nc -l -p "$port" -e './distributor.sh'
+	done
+} &
 
 while read data < "$pipe"; do
 	pid=${data%%:*} && data=${data#$pid:}
@@ -12,25 +26,13 @@ while read data < "$pipe"; do
 	message=${data#$login:}
 	timestamp=$(date +%s)
 
-	if [[ "$message" == 'exit' ]];
-	then
-		count=$(ls *.fifo | wc -l)
-		if [[ "$count" -eq 1 ]];
-		then
-			/bin/kill -9 -$DISTR_PID
-			rm -f *.fifo
-			echo 'server stoped'
-			exit 0
-		fi
-	fi
-
-	for pi in *.fifo
-	do
-		if [[ "$pi" != "$pipe" ]]; 
-		then
-			echo "$login:$timestamp:$message" > "$pi"
-		fi
-	done
+    for pi in fifos/*.fifo
+    do
+        if [[ "$pi" != 'fifos/*.fifo' ]];
+        then
+            echo "$login:$timestamp:$message" > "$pi"
+        fi
+    done
 
 done
 

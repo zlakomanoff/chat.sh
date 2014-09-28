@@ -1,29 +1,34 @@
 #!/bin/bash
+pipe="fifos/$$.fifo" && rm -f "$pipe" && mkfifo "$pipe"
+source "protocols/$1.sh";
 
-pipe="$$.fifo" && rm -f "$pipe" && mkfifo "$pipe"
+# simple auth
+echo "protocol: $1"
+echo "enter your nickname"
 
-echo "chat.sh: enter your nickname"
 read name
 echo "$$:$name:joined" > server.fifo
 
-echo "chat.sh: $name welcome to chat.sh"
+echo "$name welcome to chat.sh"
 
 # read server messages
-while read server_message < "$pipe"; do
-	echo "$server_message";
+while read server_data < "$pipe"; do
+	output "$server_data"
 done &
 
 # read client messages
 while read user_message; do
 	case "$user_message" in
 		'exit')
-			/bin/kill -9 $! && rm -f "$pipe"
-			echo 'game closed'
+			/bin/kill -9 $!
+			wait $! 2>/dev/null
+			rm -f "$pipe"
+			echo 'connection closed'
 			echo "$$:$name:$user_message" > server.fifo
 			exit 0
 			;;
 		*)
-			echo "$$:$name:$user_message" > server.fifo
+			input "$$:$name:$user_message" > server.fifo
 	esac
 done
 

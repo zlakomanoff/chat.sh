@@ -2,20 +2,25 @@
 
 read message
 
-if [[ "$message" == 'gmport' ]]
-then
-
-	while true; do
-		port=50$(($RANDOM%10))$(($RANDOM%10))$(($RANDOM%10))
+function get_port(){
+	while true;
+	do
+		port=5$(($RANDOM%10))$(($RANDOM%10))$(($RANDOM%10))$(($RANDOM%10))
 		usage=$(lsof -i :$port | wc -l)
-		if [ "$usage" -eq 0 ]; then
+		if [ "$usage" -eq 0 ]; 
+		then
 			break
 		fi
 	done
-
-	coproc nc -l -p "$port" -e client_listener.sh
 	echo "$port"
+}
 
-else
-	echo 'wrong_message'
-fi
+case "$message" in
+	*)
+		protocol='telnet'
+		port=$(get_port)
+		coproc nc -l -p "$port" -e "./client_listener.sh $protocol"
+		echo "$port"
+		;;
+esac
+
