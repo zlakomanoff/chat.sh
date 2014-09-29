@@ -20,7 +20,11 @@ trap "server_stop; exit" SIGINT
 	done
 } &
 
+sleep 1
+echo 'waiting incoming messages...'
+
 while read data < "$pipe"; do
+	echo ":> $data"
 	pid=${data%%:*} && data=${data#$pid:}
 	login=${data%%:*}
 	message=${data#$login:}

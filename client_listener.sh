@@ -3,8 +3,8 @@ pipe="fifos/$$.fifo" && rm -f "$pipe" && mkfifo "$pipe"
 source "protocols/$1.sh";
 
 # simple auth
-echo "protocol: $1"
-echo "enter your nickname"
+echo "Protocol: $1"
+echo "Enter your nickname"
 
 read name
 echo "$$:$name:joined" > server.fifo
