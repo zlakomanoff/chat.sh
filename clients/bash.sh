@@ -1,7 +1,7 @@
 #!/bin/bash
 
 bufer=()
-bufer_length=5
+bufer_length=10
 connection_attempts=3
 
 coproc server { nc "$1" "$2" 2>/dev/null; }
@@ -44,25 +44,25 @@ sleep 1
 
 nc "$1" "$port" | while read server_message; 
 do
-	length="${#bufer[@]}"
-	let "length++"
+	echo -en "\\033c"
+
 	bufer=("${bufer[@]}" "$server_message")
 	length="${#bufer[@]}"
 
 	if [ "$length" -gt "$bufer_length" ];
 	then
-		bufer=${bufer[@]:1:$length}
+		bufer=("${bufer[@]:1}")
 	fi
 
-	echo -en "\\033c"
 	for data in "${bufer[@]}"
 	do
 		login=${data%%:*} && data=${data#$login:}
 		timestamp=${data%%:*}
 		message=${data#$timestamp:}
-		
+
 		echo "$login> ${message}"
 	done
+
 done
 
 

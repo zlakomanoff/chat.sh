@@ -5,13 +5,17 @@ pipe="fifos/$$.fifo" && rm -f "$pipe" && mkfifo "$pipe"
 echo 'Protocol: telnet'
 echo 'Enter your nickname'
 
-read name
-echo "$$:$name:joined" > server.fifo
+read login
+echo "$$:$login:joined" > server.fifo
 
-echo "$name welcome to chat.sh"
+echo "$login: welcome to chat.sh"
 
 # read server messages
 while read server_data < "$pipe"; do
+	nick=${server_data%%:*}
+	if [[ "$nick" == "$login" ]]; then
+		server_data="${server_data/$nick/me}"
+	fi 
 	echo "$server_data"
 done &
 
@@ -23,10 +27,10 @@ while read user_message; do
 			wait $! 2>/dev/null
 			rm -f "$pipe"
 			echo 'connection closed'
-			echo "$$:$name:$user_message" > server.fifo
+			echo "$$:$login:$user_message" > server.fifo
 			exit 0
 			;;
 		*)
-			echo "$$:$name:$user_message" > server.fifo
+			echo "$$:$login:$user_message" > server.fifo
 	esac
 done
