@@ -19,7 +19,7 @@ case "$message" in
 	*)
 		protocol='telnet'
 		port=$(get_port)
-		coproc nc -l -p "$port" -e "./client_listener.sh $protocol"
+		coproc nc -l -p "$port" -e './protocols/telnet.sh' 
 		echo "$port"
 		;;
 esac

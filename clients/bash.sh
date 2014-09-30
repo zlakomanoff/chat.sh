@@ -41,30 +41,28 @@ done
 # waiting server
 echo 'waiting server response'
 sleep 1
-coproc server { nc "$1" "$port" 2>/dev/null; }
 
-
-# read server
-while true; 
+nc "$1" "$port" | while read server_message; 
 do
-	read -ru ${server[0]} server_message
-	bufer=(${bufer[@]} "$server_message")
+	length="${#bufer[@]}"
+	let "length++"
+	bufer=("${bufer[@]}" "$server_message")
 	length="${#bufer[@]}"
 
 	if [ "$length" -gt "$bufer_length" ];
 	then
 		bufer=${bufer[@]:1:$length}
 	fi
-	echo -e "\\033c"
-	for message in "${bufer[@]}"
-	do
-		echo ${message}
-	done
-done &
 
-#read user
-while read user_message;
-do
-	echo "$user_message" >&${server[1]}
+	echo -en "\\033c"
+	for data in "${bufer[@]}"
+	do
+		login=${data%%:*} && data=${data#$login:}
+		timestamp=${data%%:*}
+		message=${data#$timestamp:}
+		
+		echo "$login> ${message}"
+	done
 done
+
 
