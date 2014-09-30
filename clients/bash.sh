@@ -45,23 +45,35 @@ sleep 1
 nc "$1" "$port" | while read server_message; 
 do
 	echo -en "\\033c"
+	if [ "${#server_message}" -gt 300 ]; then ${server_message:0:300}; fi
 
-	bufer=("${bufer[@]}" "$server_message")
-	length="${#bufer[@]}"
-
-	if [ "$length" -gt "$bufer_length" ];
+	if [[ "$server_message" =~ ^.+:.+:.+$ ]]; 
 	then
-		bufer=("${bufer[@]:1}")
+		# user message
+		bufer=("${bufer[@]}" "$server_message")
+		length="${#bufer[@]}"
+
+		if [ "$length" -gt "$bufer_length" ];
+		then
+			bufer=("${bufer[@]:1}")
+		fi
+
+		for data in "${bufer[@]}"
+		do
+			login=${data%%:*} && data=${data#$login:}
+			timestamp=${data%%:*}
+			message=${data#$timestamp:}
+			time=$(date -d @$timestamp +"%T %z")
+
+			echo -e "\e[32m$login \e[90m$time\e[0m"
+			echo "${message}"
+			echo 
+		done
+
+	else
+		# system message
+		echo "$server_message"
 	fi
-
-	for data in "${bufer[@]}"
-	do
-		login=${data%%:*} && data=${data#$login:}
-		timestamp=${data%%:*}
-		message=${data#$timestamp:}
-
-		echo "$login> ${message}"
-	done
 
 done
 

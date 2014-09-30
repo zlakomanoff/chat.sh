@@ -6,8 +6,8 @@ pipe='server.fifo' && rm -f "$pipe" && mkfifo "$pipe"
 function server_stop() {
 	. killtree.sh
 	echo 'waiting child processes'
-	killtree $! 15
-	wait $! 2>/dev/null
+	killtree $$ 15
+	wait $$ 2>/dev/null
 	rm -f "$pipe" && echo 'bye'
 }
 trap "server_stop; exit" SIGINT
@@ -20,15 +20,34 @@ trap "server_stop; exit" SIGINT
 	done
 } &
 
+{
+	echo 'woodpecker started'
+	while true; 
+	do
+		for pi in fifos/*.fifo
+   	do
+      	if [[ "$pi" != 'fifos/*.fifo' ]];
+      	then
+				sleep 1
+      		#timeout 0.1s echo "ping" > "$pi"
+      	fi
+   	done
+		sleep 10
+	done
+} &
+
 sleep 1
 echo 'waiting incoming messages...'
 
 while read data < "$pipe"; do
-	echo ":> $data"
+	
 	pid=${data%%:*} && data=${data#$pid:}
 	login=${data%%:*}
 	message=${data#$login:}
 	timestamp=$(date +%s)
+
+	date2=$(date -d @$timestamp)
+	echo "\"$date2\" \"$data\"" >> server.log
 
     for pi in fifos/*.fifo
     do
